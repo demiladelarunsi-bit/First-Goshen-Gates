@@ -1,0 +1,556 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About — First Goshen Gate School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+    tailwind.config={theme:{extend:{colors:{blue:'#4f8cff','blue-light':'#8bb5ff',dark:'#060a14'},fontFamily:{display:['"Space Grotesk"','sans-serif'],body:['"DM Sans"','sans-serif']}}}}
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root{--blue:#4f8cff;--blue-light:#8bb5ff;--dark:#060a14;--card:rgba(10,16,30,0.8);--border:rgba(79,140,255,0.12);--border-hover:rgba(79,140,255,0.35);--glow:0 0 20px rgba(79,140,255,0.12)}
+        *{box-sizing:border-box;margin:0;padding:0}
+        ::selection{background:rgba(79,140,255,0.3);color:#fff}
+        body{font-family:'DM Sans',sans-serif;background:var(--dark);color:#c8cdd8;overflow-x:hidden;min-height:100vh}
+
+        #loader{position:fixed;inset:0;z-index:9999;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;transition:opacity .4s,visibility .4s}
+        #loader.done{opacity:0;visibility:hidden;pointer-events:none}
+        .loader-morph{width:50px;height:50px;background:linear-gradient(135deg,var(--blue),var(--blue-light));animation:morph 1.2s ease-in-out infinite}
+        @keyframes morph{0%{border-radius:50%;transform:rotate(0) scale(1)}25%{border-radius:30% 70% 70% 30%/30% 30% 70% 70%;transform:rotate(90deg) scale(1.1)}50%{border-radius:50%;transform:rotate(180deg)}75%{border-radius:70% 30% 30% 70%/70% 70% 30% 30%;transform:rotate(270deg) scale(1.1)}100%{border-radius:50%;transform:rotate(360deg) scale(1)}}
+        .loader-text{font-family:'Space Grotesk',sans-serif;font-size:.75rem;font-weight:600;color:#3a4a6a;text-transform:uppercase;letter-spacing:3px}
+        #particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+        .grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(79,140,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,0.02) 1px,transparent 1px);background-size:70px 70px;animation:gp 6s ease-in-out infinite}
+        @keyframes gp{0%,100%{opacity:.5}50%{opacity:1}}
+        .glass{background:var(--card);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;box-shadow:var(--glow)}
+
+        #navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,10,20,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border);transition:all .3s}
+        #navbar.scrolled{height:60px;box-shadow:0 4px 30px rgba(0,0,0,0.4)}
+        .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;text-decoration:none}
+        .nav-right{display:flex;align-items:center;gap:.75rem}
+        .nav-right a{padding:.45rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:500;color:#6b7a99;text-decoration:none;transition:all .3s;border:1px solid transparent}
+        .nav-right a:hover{color:var(--blue);border-color:var(--border-hover);background:rgba(79,140,255,0.05)}
+        #mobile-toggle{display:none;background:none;border:none;color:#6b7a99;font-size:1.4rem;cursor:pointer}
+        #mobile-menu{display:none;position:fixed;top:70px;left:0;right:0;background:rgba(6,10,20,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border);padding:1rem;z-index:99;flex-direction:column;gap:.25rem}
+        #mobile-menu.open{display:flex}
+        #mobile-menu a{padding:.75rem 1.25rem;border-radius:10px;color:#6b7a99;text-decoration:none;font-weight:500;transition:all .3s}
+        #mobile-menu a:hover,#mobile-menu a.active{color:var(--blue);background:rgba(79,140,255,0.08)}
+
+        /* PAGE CONTAINER */
+        .page-wrap{position:relative;z-index:2;min-height:100vh;padding:100px 1.5rem 3rem;max-width:900px;margin:0 auto}
+
+        /* HERO */
+        .about-hero{text-align:center;margin-bottom:3rem;animation:cu .8s cubic-bezier(.16,1,.3,1) forwards;opacity:0;transform:translateY(30px)}
+        @keyframes cu{to{opacity:1;transform:translateY(0)}}
+        .school-crest{width:120px;height:120px;border-radius:50%;background:linear-gradient(135deg,rgba(79,140,255,0.12),rgba(139,181,255,0.08));display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;border:2px solid var(--border-hover);position:relative}
+        .school-crest i{font-size:2.8rem;color:var(--blue)}
+        .school-crest .pulse-ring{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--blue);opacity:0;animation:pr 2.5s ease-out infinite}
+        @keyframes pr{0%{transform:scale(0.9);opacity:.5}50%{transform:scale(1);opacity:0}100%{transform:scale(0.9);opacity:0}}
+        .page-title{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.8rem);font-weight:700;color:#fff;margin-bottom:.35rem;letter-spacing:-0.5px}
+        .page-motto{color:var(--blue);font-family:'Space Grotesk',sans-serif;font-size:clamp(.95rem,2vw,1.15rem);font-weight:500;font-style:italic;letter-spacing:1px;margin-bottom:1rem}
+        .page-desc{color:#5a6a8a;font-size:.95rem;max-width:600px;margin:0 auto;line-height:1.7}
+        .page-divider{display:flex;align-items:center;gap:1rem;margin-bottom:3rem}
+        .page-divider::before,.page-divider::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent)}
+        .page-divider span{color:#3a4a6a;font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:600;text-transform:uppercase;letter-spacing:2px;white-space:nowrap}
+
+        /* FEATURES GRID */
+        .features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr);gap:1.25rem;margin-bottom:3rem}
+        .feature-card{padding:1.75rem;transition:all .4s ease}
+        .feature-card:hover{transform:translateY(-6px);border-color:var(--border-hover);box-shadow:0 12px 40px rgba(79,140,255,0.1)}
+        .fc-icon{width:48px;height:48px;border-radius:12px;background:rgba(79,140,255,0.08);display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+        .fc-icon i{font-size:1.2rem;color:var(--blue)}
+        .feature-card h3{font-family:'Space Grotesk',sans-serif;font-size:1rem;font-weight:600;color:#e0e4ed;margin-bottom:.4rem}
+        .feature-card p{color:#5a6a8a;font-size:.88rem;line-height:1.65}
+
+        /* MISSION / VISION */
+        .mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.25rem;margin-bottom:3rem}
+        .mv-card{padding:2rem;position:relative;overflow:hidden}
+        .mv-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0}
+        .mv-card.mission::before{background:linear-gradient(90deg,var(--blue),var(--blue-light))}
+        .mv-card.vision::before{background:linear-gradient(90deg,var(--blue-light),#c084fc)}
+        .mv-card h3{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;margin-bottom:1rem}
+        .mv-card.mission h3{color:var(--blue)}
+        .mv-card.vision h3{color:var(--blue-light)}
+        .mv-card p{color:#6b7a99;font-size:.92rem;line-height:1.7}
+
+        /* VALUES */
+        .values-row{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin-bottom:3rem}
+        .value-badge{padding:.6rem 1.25rem;border-radius:12px;background:rgba(79,140,255,0.06);border:1px solid var(--border);text-align:center;transition:all .3s}
+        .value-badge:hover{background:rgba(79,140,255,0.12);border-color:var(--border-hover);transform:translateY(-3px)}
+        .value-badge i{display:block;font-size:1.3rem;color:var(--blue);margin-bottom:.4rem}
+        .value-badge span{display:block;font-size:.75rem;color:#8b95aa;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+
+        /* MANAGEMENT */
+        .mg-section{margin-bottom:3rem}
+        .mg-header{display:flex;align-items:center;gap:.6rem;margin-bottom:1.5rem}
+        .mg-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+        .mg-header h3{font-family:'Space Grotesk',sans-serif;font-size:.8rem;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--blue);white-space:nowrap}
+        .mg-list{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+        .mg-item{display:flex;align-items:flex-start;gap:1rem;padding:1.25rem;background:var(--card);border:1px solid var(--border);border-radius:12px;transition:all .3s}
+        .mg-item:hover{border-color:var(--border-hover);background:rgba(79,140,255,0.04);transform:translateX(4px)}
+        .mg-num{width:32px;height:32px;border-radius:8px;background:rgba(79,140,255,0.1);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.85rem;color:var(--blue)}
+        .mg-text h4{font-family:'Space Grotesk',sans-serif;font-size:.95rem;font-weight:600;color:#e0e4ed;margin-bottom:.2rem}
+        .mg-text p{color:#5a6a8a;font-size:.85rem;line-height:1.5}
+
+        /* CONTACT GRID */
+        .contact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr);gap:1rem;margin-bottom:3rem}
+        .contact-item{display:flex;align-items:center;gap:1rem;padding:1rem 1.25rem;transition:all .3s}
+        .contact-item:hover{background:rgba(79,140,255,0.04);transform:translateX(4px)}
+        .contact-icon{width:44px;height:44px;border-radius:12px;background:rgba(79,140,255,0.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .contact-icon i{font-size:1rem;color:var(--blue)}
+        .ct-label{font-size:.65rem;color:#4a5a7a;text-transform:uppercase;letter-spacing:1.2px;font-weight:600}
+        .ct-value{color:#d0d5e0;font-size:.95rem;font-weight:500;margin-top:.1rem}
+        .ct-value a{color:var(--blue);text-decoration:none;font-weight:600;}
+        .ct-value a:hover{text-decoration:underline}
+
+        /* FOOTER */
+        .page-footer{text-align:center;padding:2.5rem 1.5rem;border-top:1px solid var(--border);color:#3a4a6a;font-size:.85rem}
+        .page-footer span{color:var(--blue)}
+        .page-footer a{color:var(--blue);text-decoration:none;font-weight:600;}
+        .page-footer a:hover{text-decoration:underline;}
+
+        /* TOAST */
+        #toast-container{position:fixed;top:85px;right:1.5rem;z-index:200;display:flex;flex-direction:column;gap:.75rem;pointer-events:none}
+        .toast{pointer-events:auto;padding:1rem 1.5rem;border-radius:12px;backdrop-filter:blur(20px);min-width:280px;display:flex;align-items:center;gap:.75rem;font-size:.9rem;font-weight:500;animation:ti .4s cubic-bezier(.16,1,.3,1);border:1px solid}
+        .toast.removing{animation:to .3s ease forwards}
+        .toast-success{background:rgba(79,140,255,0.1);border-color:rgba(79,140,255,0.25);color:var(--blue)}
+        .toast-error{background:rgba(255,70,90,0.1);border-color:rgba(255,70,90,0.25);color:#ff465a}
+        .toast-info{background:rgba(139,181,255,0.1);border-color:rgba(139,181,255,0.25);color:var(--blue-light)}
+        @keyframes ti{from{transform:translateX(120%);opacity:0}to{transform:translateX(0);opacity:1}}
+        @keyframes to{to{transform:translateX(120%);opacity:0}}
+        .hidden{display:none!important}
+
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--dark)}::-webkit-scrollbar-thumb{background:rgba(79,140,255,0.2);border-radius:3px}
+
+        @media(max-width:768px){
+            #mobile-toggle{display:block}
+            #mobile-menu.open{display:flex}
+            .features-grid{grid-template-columns:1fr}
+            .mv-grid{grid-template-columns:1fr}
+            .contact-grid{grid-template-columns:1fr}
+            .values-row{gap:.5rem}
+            .value-badge{padding:.5rem 1rem}
+            .value-badge span{font-size:.65rem}
+            #navbar{padding:0 1rem}
+            .mg-list{grid-template-columns:1fr}
+        }
+        @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}#particles{display:none}}
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <div id="loader"><div class="loader-morph"></div><div class="loader-text">Loading</div></div>
+    <canvas id="particles"></canvas>
+    <div class="grid-bg"></div>
+
+    <nav id="navbar">
+        <a href="/" class="nav-logo">First Goshen Gate</a>
+        <div class="nav-right">
+            <a href="/"><i class="fas fa-home" style="margin-right:.35rem;"></i>Home</a>
+            <a href="/admin/login/"><i class="fas fa-lock" style="margin-right:.35rem;"></i>Admin</a>
+        </div>
+        <button id="mobile-toggle" aria-label="Toggle menu"><i class="fas fa-bars"></i></button>
+    </nav>
+    <div id="mobile-menu">
+        <a href="/"><i class="fas fa-home" style="margin-right:.35rem;"></i>Home</a>
+        <a href="/admin/login/"><i class="fas fa-lock" style="margin-right:.35rem;"></i>Admin</a>
+    </div>
+
+    <div class="page-wrap">
+        <!-- HERO -->
+        <div class="about-hero">
+            <div class="school-crest">
+                <i class="fas fa-graduation-cap"></i>
+                <div class="pulse-ring"></div>
+            </div>
+            <h1 class="page-title">First Goshen Gate School</h1>
+            <p class="page-motto">"Nurturing Tomorrow's Leaders Today"</p>
+            <p class="page-desc">A leading nursery and primary school committed to providing quality education in a safe and stimulating environment where every child is encouraged to discover their unique potential and develop a lifelong love for learning.</p>
+        </div>
+
+        <div class="page-divider"><span>What We Offer</span></div>
+
+        <!-- FEATURES -->
+        <div class="features-grid section-reveal">
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-book-open"></i></div>
+                <h3>Quality Curriculum</h3>
+                <p>A well-structured curriculum aligned with national standards, blending academic excellence with creative and moral education to develop the total child.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-chalkboard-teacher"></i></div>
+                <h3>Experienced Staff</h3>
+                <p>Our dedicated and passionate teachers bring years of experience in early childhood and primary education, creating engaging learning experiences.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-heart"></i></div>
+                <h3>Safe Environment</h3>
+                <p>A secure, nurturing and child-friendly space where every student feels valued, protected, and encouraged to express themselves.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-laptop-code"></i></div>
+                <h3>Modern Facilities</h3>
+                <p>Well-equipped classrooms with modern teaching aids, computer labs, a library, and outdoor play areas for holistic development.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-users"></i></div>
+                <h3>Inclusive Community</h3>
+                <p>We celebrate diversity and welcome children from all backgrounds, fostering a culture of respect, empathy, and teamwork.</p>
+            </div>
+            <div class="feature-card glass">
+                <div class="fc-icon"><i class="fas fa-star"></i></div>
+                <h3>Co-curricular</h3>
+                <p>Beyond academics, we offer sports, arts, music, clubs, and events that build confidence and uncover hidden talents.</p>
+            </div>
+        </div>
+
+        <!-- MISSION / VISION -->
+        <div class="mv-grid section-reveal">
+            <div class="mv-card glass mission">
+                <h3><i class="fas fa-bullseye" style="margin-right:.5rem;"></i>Our Mission</h3>
+                <p>To provide a strong educational foundation that equips every child with the knowledge, skills, character, and confidence to thrive in an ever-changing world.</p>
+            </div>
+            <div class="mv-card glass vision">
+                <h3><i class="fas fa-eye" style="margin-right:.5rem;"></i>Our Vision</h3>
+                <p>To be the school of first choice in the community, recognized for academic excellence, moral uprightness, and all-round student development.</p>
+            </div>
+        </div>
+
+        <!-- VALUES -->
+        <div class="values-row section-reveal">
+            <div class="value-badge glass"><i class="fas fa-lightbulb"></i><span>Excellence</span></div>
+            <div class="value-badge glass"><i class="fas fa-handshake"></i><span>Integrity</span></div>
+            <div class="value-badge glass"><i class="fas fa-seedling"></i><span>Growth</span></div>
+            <div class="value-badge glass"><i class="fas fa-hands-helping"></i><span>Service</span></div>
+            <div class="value-badge glass"><i class="fas fa-child"></i><span>Child-Centered</span></div>
+            <div class="value-badge glass"><i class="fas fa-globe-africa"></i><span>Heritage</span></div>
+        </div>
+
+        <!-- MANAGEMENT -->
+        <div class="mg-section section-reveal">
+            <div class="mg-header"><h3><i class="fas fa-sitemap" style="margin-right:.5rem;"></i>School Management</h3></div>
+            <div class="mg-list">
+                <div class="mg-item">
+                    <div class="mg-num">01</div>
+                    <div class="mg-text">
+                        <h4>Digital Result System</h4>
+                        <p>Instant online result checking — no more long queues or lost result sheets. Parents and students can check scores from home at any time, day or night.</p>
+                    </div>
+                </div>
+                <div class="mg-item">
+                    <div class="mg-num">02</div>
+                    <div class="mg-text">
+                        <h4>Real-time Upload</h4>
+                        <p>Teachers upload scores once and results appear immediately. No manual collation or paperwork delays.</p>
+                    </div>
+                </div>
+                <div class="mg-item">
+                    <div class="mg-num">03</div>
+                    <div class="mg-text">
+                        <h4>Accuracy Guaranteed</h4>
+                        <p>Grades and remarks are auto-calculated, eliminating human error in result compilation.</p>
+                    </div>
+                </div>
+                <div class="mg-item">
+                    <div class="mg-num">04</div>
+                    <div class="mg-text">
+                        <h4>Data Security</h4>
+                        <p>Student data is stored securely with access controls, encryption, and regular backups for safety.</p>
+                    </div>
+                </div>
+                <div class="mg-item">
+                    <div class="mg-num">05</div>
+                    <div class="mg-text">
+                        <h4>Multi-Term Support</h4>
+                        <p>Organized by class, year, and term. Historical data is always accessible for reference.</p>
+                    </div>
+                </div>
+                <div class="mg-item">
+                    <div class="mg-num">06</div>
+                    <div class="mg-text">
+                        <h4>Bulk CSV Import</h4>
+                        <p>Upload hundreds of results at once using a simple CSV file format. Perfect for end-of-term processing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONTACT -->
+        <div class="mg-section section-reveal">
+            <div class="mg-header"><h3><i class="fas fa-address-card" style="margin-right:.5rem;"></i>Get in Touch</h3></div>
+            <div class="contact-grid">
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fas fa-map-marker-alt"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">Address</div>
+                        <div class="ct-value">123 Education Way, Lagos, Nigeria</div>
+                    </div>
+                </div>
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fas fa-phone-alt"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">Phone</div>
+                        <div class="ct-value">+234 801 234 5678</div>
+                    </div>
+                </div>
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fas fa-envelope"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">Email</div>
+                        <div class="ct-value"><a href="mailto:info@First Goshen Gate.sch.ng">info@First Goshen Gate.sch.ng</a></div>
+                    </div>
+                </div>
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fas fa-clock"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">School Hours</div>
+                        <div class="ct-value">Mon - Fri: 7:30am - 3:00pm</div>
+                    </div>
+                </div>
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fas fa-calendar-alt"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">School Days</div>
+                        <div class="ct-value">Monday to Friday</div>
+                    </div>
+                </div>
+                <div class="contact-item glass">
+                    <div class="contact-icon"><i class="fab fa-whatsapp"></i></div>
+                    <div class="contact-text">
+                        <div class="ct-label">WhatsApp</div>
+                        <div class="ct-value"><a href="https://wa.me/2348012345678" target="_blank" rel="noopener">+234 801 234 5678</a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer section-reveal">
+            <p><span>First Goshen Gate</span> &copy; 2024 &mdash; First Goshen Gate School. All rights reserved.</p>
+            <p style="margin-top:.5rem;">Built with <a href="/">love</a> for education.</p>
+        </div>
+    </div>
+
+    <div id="toast-container"></div>
+    <canvas id="particles"></canvas>
+
+    <script>
+    // LOADER
+    (function() {
+        var loader = document.getElementById('loader');
+        setTimeout(function() { loader.classList.add('done'); }, 1500);
+        window.addEventListener('load', function() {
+            setTimeout(function() { loader.classList.add('done'); }, 200);
+        });
+    })();
+
+    // HELPERS
+    function getCSRF() {
+        try {
+            var el = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (el && el.value) return el.value;
+            var parts = document.cookie.split(';');
+            for (var i = 0; i < parts.length; i++) {
+                var c = parts[i].trim();
+                if (c.indexOf('csrftoken=') === 0) return c.substring(10);
+            }
+        } catch(e) {}
+        return '';
+    }
+    function esc(s) {
+        var d = document.createElement('div');
+        d.appendChild(document.createTextNode(s || ''));
+        return d.innerHTML;
+    }
+    function gc(g) {
+        if (!g) return 'g-f';
+        g = g.toUpperCase().trim();
+        if (g === 'A+' || g === 'A') return 'g-a';
+        if (g === 'B') return 'g-b';
+        if (g === 'C') return 'g-c';
+        if (g === 'D') return 'g-d';
+        return 'g-f';
+    }
+    function setBtnLoading(btn, on) {
+        if (on) { btn.classList.add('loading'); btn.disabled = true; }
+        else { btn.classList.remove('loading'); btn.disabled = false; }
+    }
+    function toast(msg, type) {
+        try {
+            var icons = { success: 'fa-check-circle', error: 'fa-times-circle', info: 'fa-info-circle' };
+            var el = document.createElement('div');
+            el.className = 'toast toast-' + (type || 'success');
+            el.innerHTML = '<i class="fas ' + (icons[type] || 'fa-info-circle') + '"></i><span>' + msg + '</span>';
+            document.getElementById('toast-container').appendChild(el);
+            setTimeout(function() {
+                el.classList.add('removing');
+                setTimeout(function() { if (el.parentNode) el.parentNode.removeChild(el); }, 300);
+            }, 3500);
+        } catch(e) {}
+    }
+
+    // PARTICLES
+    (function() {
+        try {
+            var canvas = document.getElementById('particles');
+            if (!canvas) return;
+            var ctx = canvas.getContext('2d');
+            if (!ctx) return;
+            var pts = [], mx = -999, my = -999;
+
+            function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+            resize();
+            window.addEventListener('resize', resize);
+            for (var i = 0; i < 60; i++) {
+                pts.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    vx: (Math.random() - 0.5) * 0.5,
+                    vy: (Math.random() - 0.5) * 0.5,
+                    r: Math.random() * 2 + 0.5,
+                    hue: Math.random() > 0.5 ? 220 : 210,
+                    a: Math.random() * 0.4 + 0.2
+                });
+            }
+
+            function loop() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (var i = 0; i < pts.length; i++) {
+                    var p = pts[i];
+                    var dx = p.x - mx, dy = p.y - my;
+                    var dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 140 && dist > 0) {
+                        var f = (140 - dist) / 140 * 0.7;
+                        p.vx += (dx / dist) * f;
+                        p.vy += (dy / dist) * f;
+                    }
+                    p.vx *= 0.98; p.vy *= 0.98;
+                    if (Math.abs(p.vx) < 0.08) p.vx += (Math.random() - 0.5) * 0.1;
+                    if (Math.abs(p.vy) < 0.08) p.vy += (Math.random() - 0.5) * 0.1;
+                    p.x += p.vx; p.y += p.vy;
+                    if (p.x < -10) p.x = canvas.width + 10;
+                    if (p.x > canvas.width + 10) p.x = -10;
+                    if (p.y < -10) p.y = canvas.height + 10;
+                    if (p.y > canvas.height + 10) p.y = -10;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, Math.max(0.1, p.r), 0, Math.PI * 2);
+                    ctx.fillStyle = 'hsla(' + p.hue + ',80%,65%,' + p.a + ')';
+                    ctx.fill();
+                }
+                for (var i = 0; i < pts.length; i++) {
+                    for (var j = i + 1; j < pts.length; j++) {
+                        var dx = pts[i].x - pts[j].x;
+                        var dy = pts[i].y - pts[j].y;
+                        var d = Math.sqrt(dx * dx + dy * dy * dy);
+                        if (d < 120) {
+                            ctx.beginPath();
+                            ctx.moveTo(pts[i].x, pts[i].y);
+                            ctx.lineTo(pts[j].x, pts[j].y);
+                            ctx.strokeStyle = 'rgba(79,140,255,' + ((1 - d / 120) * 0.1) + ')';
+                            ctx.lineWidth = 0.5;
+                            ctx.stroke();
+                        }
+                    }
+                }
+                requestAnimationFrame(loop);
+            }
+            loop();
+        } catch(e) { console.warn('Particles error:', e); }
+    })();
+
+    // SCROLL REVEAL
+    (function() {
+        try {
+            var reveals = document.querySelectorAll('.section-reveal');
+            var obs = new IntersectionObserver(function(entries) {
+                entries.forEach(function(e) {
+                    if (e.isIntersecting) e.target.classList.add('visible');
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+            reveals.forEach(function(el) { obs.observe(el); });
+        } catch(e) {}
+    })();
+
+    // NAV SCROLL + MOBILE
+    var navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', function() { navbar.classList.toggle('scrolled', window.scrollY > 50); });
+
+    var mobileToggle = document.getElementById('mobile-toggle');
+    var mobileMenu = document.getElementById('mobile-menu');
+    mobileToggle.addEventListener('click', function() {
+        mobileMenu.classList.toggle('open');
+        mobileToggle.querySelector('i').className = mobileMenu.classList.contains('open') ? 'fas fa-times' : 'fas fa-bars';
+    });
+    document.querySelectorAll('#mobile-menu a').forEach(function(link) {
+        link.addEventListener('click', function() {
+            mobileMenu.classList.remove('open');
+            mobileToggle.querySelector('i').className = 'fas fa-bars';
+        });
+    });
+
+    // CONFETTI
+    var cCV = document.getElementById('confetti');
+    var cCX = cCV.getContext('2d');
+    var cPs = [], cAn = false;
+    function resizeC() { cCV.width = window.innerWidth; cCV.height = window.innerHeight; }
+    resizeC(); window.addEventListener('resize', resizeC);
+    function launchConfetti() {
+        try {
+            cPs = [];
+            var colors = ['#4f8cff', '#8bb5ff', '#ff465a', '#ffb432', '#c084fc', '#ffffff'];
+            for (var i = 0; i < 100; i++) {
+                cPs.push({
+                    x: cCV.width / 2 + (Math.random() - 0.5) * 200,
+                    y: cCV.height / 2,
+                    vx: (Math.random() - 0.5) * 16,
+                    vy: -(Math.random() * 12 + 4),
+                    w: Math.random() * 10 + 5, h: Math.random() * 6 + 3,
+                    rot: Math.random() * 360, rs: (Math.random() - 0.5) * 15,
+                    g: 0.25, a: 1,
+                    color: colors[Math.floor(Math.random() * colors.length)]
+                });
+            }
+            if (!cAn) { cAn = true; aCf(); }
+        } catch(e) {}
+    }
+    function aCf() {
+        cCX.clearRect(0, 0, cCV.width, cCV.height);
+        cPs = cPs.filter(function(p) { return p.a > 0; });
+        for (var i = 0; i < cPs.length; i++) {
+            var p = cPs[i];
+            p.vy += p.g; p.x += p.vx; p.y += p.vy;
+            p.rot += p.rs; p.vx *= 0.99;
+            if (p.y > cCV.height) p.a -= 0.05;
+            if (p.a <= 0) continue;
+            cCX.save();
+            cCX.translate(p.x, p.y);
+            cCX.rotate(p.rot * Math.PI / 180);
+            cCX.globalAlpha = Math.max(0, p.a);
+            cCX.fillStyle = p.color;
+            cCX.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+            cCX.restore();
+        }
+        if (cPs.length > 0) requestAnimationFrame(aCf);
+        else { cAn = false; cCX.clearRect(0, 0, cCV.width, cCV.height); }
+    }
+
+    // RIPPLE
+    document.addEventListener('click', function(e) {
+        var btn = e.target.closest('.btn');
+        if (!btn) return;
+        var r = btn.getBoundingClientRect();
+        var sz = Math.max(r.width, r.height);
+        var rp = document.createElement('span');
+        rp.className = 'ripple';
+        rp.style.width = rp.style.height = sz + 'px';
+        rp.style.left = (e.clientX - r.left - sz / 2) + 'px';
+        rp.style.top = (e.clientY - r.top - sz / 2) + 'px';
+        btn.appendChild(rp);
+        setTimeout(function() { if (rp.parentNode) rp.parentNode.removeChild(rp); }, 600);
+    });
+
+    </script>
+</body>
+</html>

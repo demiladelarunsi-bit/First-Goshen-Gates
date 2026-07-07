@@ -1,0 +1,1058 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proprietress Dashboard — First Goshen Gate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              blue: "#4f8cff",
+              "blue-light": "#8bb5ff",
+              dark: "#060a14",
+            },
+            fontFamily: {
+              display: ['"Space Grotesk"', "sans-serif"],
+              body: ['"DM Sans"', "sans-serif"],
+            },
+          },
+        },
+      };
+    </script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+    />
+    <style>
+      :root {
+        --blue: #4f8cff;
+        --blue-light: #8bb5ff;
+        --dark: #060a14;
+        --card: rgba(10, 16, 30, 0.8);
+        --border: rgba(79, 140, 255, 0.12);
+        --border-hover: rgba(79, 140, 255, 0.35);
+        --glow: 0 0 20px rgba(79, 140, 255, 0.12);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--dark);
+        color: #c8cdd8;
+        min-height: 100vh;
+        overflow-x: hidden;
+      }
+      .grid-bg {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background-image:
+          linear-gradient(rgba(79, 140, 255, 0.02) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(79, 140, 255, 0.02) 1px, transparent 1px);
+        background-size: 70px 70px;
+      }
+      .glass {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+        box-shadow: var(--glow);
+      }
+      #navbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        padding: 0 2rem;
+        height: 70px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: rgba(6, 10, 20, 0.85);
+        backdrop-filter: blur(24px);
+        border-bottom: 1px solid var(--border);
+      }
+      .nav-logo {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 1.5rem;
+        background: linear-gradient(135deg, var(--blue), var(--blue-light));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        text-decoration: none;
+      }
+      .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+      .nav-right a,
+      .nav-right button {
+        padding: 0.45rem 1.1rem;
+        border-radius: 10px;
+        font-size: 0.85rem;
+        font-weight: 500;
+        color: #6b7a99;
+        text-decoration: none;
+        transition: all 0.3s;
+        border: 1px solid transparent;
+        background: none;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+      }
+      .nav-right a:hover,
+      .nav-right button:hover {
+        color: var(--blue);
+        border-color: var(--border-hover);
+        background: rgba(79, 140, 255, 0.05);
+      }
+      .nav-right .user-badge {
+        color: #ffb432;
+        font-weight: 600;
+        border: none;
+        cursor: default;
+        font-family: "Space Grotesk", sans-serif;
+      }
+
+      #dashboard {
+        position: relative;
+        z-index: 2;
+        padding: 100px 1.5rem 3rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .dash-header {
+        margin-bottom: 2rem;
+      }
+      .dash-header h1 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .dash-header p {
+        color: #5a6a8a;
+        font-size: 0.95rem;
+        margin-top: 0.25rem;
+      }
+
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2.5rem;
+      }
+      .stat-card {
+        text-align: center;
+        padding: 1.5rem;
+        transition: all 0.3s;
+      }
+      .stat-card:hover {
+        transform: translateY(-4px);
+        border-color: var(--border-hover);
+      }
+      .stat-card i {
+        font-size: 1.5rem;
+        margin-bottom: 0.5rem;
+        display: block;
+      }
+      .stat-card .num {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        color: #fff;
+      }
+      .stat-card p {
+        color: #4a5a7a;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 1.5px;
+        margin-top: 0.15rem;
+      }
+      .text-blue {
+        color: var(--blue);
+      }
+      .text-green {
+        color: #4ade80;
+      }
+      .text-gold {
+        color: #ffb432;
+      }
+
+      .analytics-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+      .analytics-card {
+        padding: 1.5rem;
+      }
+      .analytics-card h3 {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.75rem;
+        font-weight: 700;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        margin-bottom: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .analytics-card h3::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--border), transparent);
+      }
+
+      .bar-chart {
+        display: flex;
+        align-items: flex-end;
+        gap: 0.75rem;
+        height: 150px;
+        padding-top: 1rem;
+      }
+      .bar-col {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+      }
+      .bar {
+        width: 100%;
+        border-radius: 4px 4px 0 0;
+        background: linear-gradient(
+          180deg,
+          var(--blue),
+          rgba(79, 140, 255, 0.3)
+        );
+        transition: height 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+        position: relative;
+        min-height: 5px;
+      }
+      .bar span {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: #fff;
+        white-space: nowrap;
+      }
+      .bar-label {
+        font-size: 0.65rem;
+        color: #4a5a7a;
+        text-align: center;
+        word-break: break-all;
+        line-height: 1.2;
+      }
+
+      .grade-row {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0.75rem;
+      }
+      .grade-badge {
+        width: 35px;
+        height: 25px;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 0.8rem;
+        margin-right: 0.75rem;
+        flex-shrink: 0;
+      }
+      .g-a {
+        background: rgba(79, 140, 255, 0.15);
+        color: #4f8cff;
+      }
+      .g-b {
+        background: rgba(139, 181, 255, 0.15);
+        color: #8bb5ff;
+      }
+      .g-c {
+        background: rgba(255, 180, 50, 0.15);
+        color: #ffb432;
+      }
+      .g-d {
+        background: rgba(255, 120, 50, 0.15);
+        color: #ff7832;
+      }
+      .g-f {
+        background: rgba(255, 70, 90, 0.15);
+        color: #ff465a;
+      }
+      .grade-bar-bg {
+        flex: 1;
+        height: 8px;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 4px;
+        overflow: hidden;
+      }
+      .grade-bar-fill {
+        height: 100%;
+        border-radius: 4px;
+        transition: width 1s ease;
+      }
+      .grade-count {
+        margin-left: 0.75rem;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.85rem;
+        color: #6b7a99;
+        min-width: 30px;
+        text-align: right;
+      }
+
+      .top-list {
+        list-style: none;
+      }
+      .top-list li {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+      }
+      .top-list li:last-child {
+        border: none;
+      }
+      .top-rank {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background: rgba(79, 140, 255, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 0.75rem;
+        color: var(--blue);
+        margin-right: 0.75rem;
+      }
+      .top-name {
+        font-weight: 500;
+        color: #d0d5e0;
+      }
+      .top-meta {
+        font-size: 0.75rem;
+        color: #4a5a7a;
+      }
+      .top-avg {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        color: var(--blue);
+      }
+
+      /* Student List */
+      .section-label {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.7rem;
+        font-weight: 700;
+        color: var(--blue);
+        text-transform: uppercase;
+        letter-spacing: 2.5px;
+        margin-bottom: 1.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .section-label::after {
+        content: "";
+        flex: 1;
+        height: 1px;
+        background: linear-gradient(90deg, var(--border), transparent);
+      }
+      .results-filters {
+        display: flex;
+        gap: 0.75rem;
+        margin-bottom: 1.25rem;
+        flex-wrap: wrap;
+      }
+      .results-filters input,
+      .results-filters select {
+        padding: 0.6rem 1rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid var(--border);
+        border-radius: 10px;
+        color: #e0e4ed;
+        font-family: "DM Sans", sans-serif;
+        font-size: 0.85rem;
+        outline: none;
+        transition: all 0.3s;
+      }
+      .results-filters input:focus,
+      .results-filters select:focus {
+        border-color: var(--blue);
+        box-shadow: 0 0 0 2px rgba(79, 140, 255, 0.1);
+      }
+      .results-filters input {
+        flex: 1;
+        min-width: 180px;
+      }
+      .results-filters select {
+        cursor: pointer;
+      }
+      .results-filters select option {
+        background: #0a1020;
+      }
+      .filter-btn {
+        padding: 0.6rem 1.25rem;
+        background: rgba(79, 140, 255, 0.1);
+        border: 1px solid rgba(79, 140, 255, 0.25);
+        border-radius: 10px;
+        color: var(--blue);
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s;
+      }
+      .filter-btn:hover {
+        background: rgba(79, 140, 255, 0.2);
+      }
+
+      .student-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+      .student-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem 1.25rem;
+        border-radius: 12px;
+        border: 1px solid var(--border);
+        background: rgba(255, 255, 255, 0.015);
+        cursor: pointer;
+        transition: all 0.25s;
+        text-decoration: none;
+        color: inherit;
+      }
+      .student-card:hover {
+        border-color: var(--border-hover);
+        background: rgba(79, 140, 255, 0.04);
+        transform: translateX(4px);
+      }
+      .sc-left {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .sc-avatar {
+        width: 42px;
+        height: 42px;
+        border-radius: 10px;
+        background: rgba(79, 140, 255, 0.1);
+        border: 1px solid rgba(79, 140, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 700;
+        font-size: 1rem;
+        color: var(--blue);
+        flex-shrink: 0;
+      }
+      .sc-name {
+        font-family: "Space Grotesk", sans-serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        color: #e0e4ed;
+        margin-bottom: 0.15rem;
+      }
+      .sc-meta {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+      }
+      .sc-meta span {
+        font-size: 0.75rem;
+        color: #4a5a7a;
+        display: flex;
+        align-items: center;
+        gap: 0.3rem;
+      }
+      .sc-meta span i {
+        color: var(--blue);
+        font-size: 0.7rem;
+        opacity: 0.7;
+      }
+      .sc-right {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .sc-subj-count {
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        color: #4a5a7a;
+        text-align: center;
+      }
+      .sc-subj-count strong {
+        display: block;
+        font-size: 1.1rem;
+        color: #8b95aa;
+      }
+      .sc-arrow {
+        color: #2a3a5a;
+        transition: all 0.25s;
+      }
+      .student-card:hover .sc-arrow {
+        color: var(--blue);
+        transform: translateX(3px);
+      }
+
+      .pagination {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        margin-top: 1.5rem;
+      }
+      .pagination button {
+        padding: 0.5rem 0.85rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        background: transparent;
+        color: #6b7a99;
+        font-family: "Space Grotesk", sans-serif;
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+      }
+      .pagination button:hover:not(:disabled) {
+        border-color: var(--border-hover);
+        color: var(--blue);
+      }
+      .pagination button.active {
+        background: rgba(79, 140, 255, 0.1);
+        color: var(--blue);
+        border-color: rgba(79, 140, 255, 0.3);
+      }
+      .pagination button:disabled {
+        opacity: 0.3;
+        cursor: not-allowed;
+      }
+      .page-info {
+        color: #4a5a7a;
+        font-size: 0.8rem;
+        padding: 0 0.5rem;
+      }
+      .empty-state {
+        text-align: center;
+        padding: 4rem 2rem;
+        color: #3a4a6a;
+      }
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        color: #2a3a5a;
+      }
+
+      #toast-container {
+        position: fixed;
+        top: 85px;
+        right: 1.5rem;
+        z-index: 200;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        pointer-events: none;
+      }
+      .toast {
+        pointer-events: auto;
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        backdrop-filter: blur(20px);
+        min-width: 280px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-size: 0.9rem;
+        font-weight: 500;
+        animation: ti 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        border: 1px solid;
+      }
+      .toast.removing {
+        animation: to 0.3s ease forwards;
+      }
+      .toast-success {
+        background: rgba(79, 140, 255, 0.1);
+        border-color: rgba(79, 140, 255, 0.25);
+        color: var(--blue);
+      }
+      .toast-error {
+        background: rgba(255, 70, 90, 0.1);
+        border-color: rgba(255, 70, 90, 0.25);
+        color: #ff465a;
+      }
+      .toast-info {
+        background: rgba(139, 181, 255, 0.1);
+        border-color: rgba(139, 181, 255, 0.25);
+        color: var(--blue-light);
+      }
+      @keyframes ti {
+        from {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+        to {
+          transform: translateX(0);
+          opacity: 1;
+        }
+      }
+      @keyframes to {
+        to {
+          transform: translateX(120%);
+          opacity: 0;
+        }
+      }
+
+      ::-webkit-scrollbar {
+        width: 6px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--dark);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(79, 140, 255, 0.2);
+        border-radius: 3px;
+      }
+      @media (max-width: 768px) {
+        .analytics-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .results-filters {
+          flex-direction: column;
+        }
+        .results-filters input {
+          min-width: 100%;
+        }
+        #navbar {
+          padding: 0 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    {% csrf_token %}
+    <div class="grid-bg"></div>
+
+    <nav id="navbar">
+      <a href="/" class="nav-logo">First Goshen Gate</a>
+      <div class="nav-right">
+        <span class="user-badge"
+          ><i class="fas fa-crown" style="margin-right: 0.35rem"></i>{{ username}} (Admin)</span
+        >
+        <a href="/"
+          ><i class="fas fa-home" style="margin-right: 0.35rem"></i>Home</a
+        >
+        <button id="logout-btn">
+          <i class="fas fa-sign-out-alt" style="margin-right: 0.35rem"></i
+          >Logout
+        </button>
+      </div>
+    </nav>
+
+    <div id="dashboard">
+      <div class="dash-header">
+        <h1>
+          <i class="fas fa-crown text-gold" style="margin-right: 0.5rem"></i
+          >Administration Overview
+        </h1>
+        <p>School-wide analytics and all uploaded results</p>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-card glass">
+          <i class="fas fa-file-alt text-blue"></i
+          ><span class="num" id="s-total">—</span>
+          <p>Total Results</p>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-user-graduate text-blue"></i
+          ><span class="num" id="s-students">—</span>
+          <p>Students</p>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-chalkboard-teacher text-gold"></i
+          ><span class="num" id="s-teachers">—</span>
+          <p>Teachers</p>
+        </div>
+        <div class="stat-card glass">
+          <i class="fas fa-chart-line text-green"></i
+          ><span class="num" id="s-pass">—%</span>
+          <p>Pass Rate</p>
+        </div>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card glass">
+          <h3>
+            <i class="fas fa-chart-bar"></i> Class Performance (Avg Score)
+          </h3>
+          <div class="bar-chart" id="class-chart"></div>
+        </div>
+        <div class="analytics-card glass">
+          <h3><i class="fas fa-trophy"></i> Grade Distribution</h3>
+          <div id="grade-dist"></div>
+        </div>
+      </div>
+
+      <div
+        class="analytics-card glass"
+        style="margin-bottom: 2.5rem; padding: 1.5rem"
+      >
+        <h3><i class="fas fa-medal"></i> Top 5 Performing Students</h3>
+        <ul class="top-list" id="top-students"></ul>
+      </div>
+
+      <div class="glass" style="padding: 1.5rem">
+        <div class="section-label">
+          <i class="fas fa-database"></i> All Student Records
+        </div>
+        <div class="results-filters">
+          <input
+            type="text"
+            id="rf-search"
+            placeholder="Search by name or exam number..."
+          />
+          <select id="rf-class">
+            <option value="">All Classes</option>
+          </select>
+          <select id="rf-year">
+            <option value="">All Years</option>
+          </select>
+          <select id="rf-term">
+            <option value="">All Terms</option>
+            <option>First Term</option>
+            <option>Second Term</option>
+            <option>Third Term</option>
+          </select>
+          <button class="filter-btn" id="rf-apply">
+            <i class="fas fa-filter"></i> Filter
+          </button>
+          <button
+            class="filter-btn"
+            id="rf-clear"
+            style="color: #6b7a99; border-color: var(--border)"
+          >
+            <i class="fas fa-times"></i> Clear
+          </button>
+        </div>
+        <div id="results-list-wrap"></div>
+        <div class="pagination" id="pagination"></div>
+      </div>
+    </div>
+
+    <div id="toast-container"></div>
+
+    <script>
+      function getCSRF() {
+        var el = document.querySelector('input[name="csrfmiddlewaretoken"]');
+        if (el) return el.value;
+        var ck = document.cookie.split(";");
+        for (var i = 0; i < ck.length; i++) {
+          var v = ck[i].trim();
+          if (v.indexOf("csrftoken=") === 0) return v.substring(10);
+        }
+        return "";
+      }
+      function esc(s) {
+        var d = document.createElement("div");
+        d.appendChild(document.createTextNode(s || ""));
+        return d.innerHTML;
+      }
+      function toast(m, t) {
+        t = t || "success";
+        var ic = {
+            success: "fa-check-circle",
+            error: "fa-times-circle",
+            info: "fa-info-circle",
+          },
+          e = document.createElement("div");
+        e.className = "toast toast-" + t;
+        e.innerHTML =
+          '<i class="fas ' +
+          (ic[t] || ic.info) +
+          '"></i><span>' +
+          m +
+          "</span>";
+        document.getElementById("toast-container").appendChild(e);
+        setTimeout(function () {
+          e.classList.add("removing");
+          setTimeout(function () {
+            e.remove();
+          }, 300);
+        }, 3500);
+      }
+
+      // Load Stats
+      fetch("/ajax/superuser-stats/")
+        .then((r) => r.json())
+        .then((d) => {
+          if (d.status !== "success") return;
+          document.getElementById("s-total").textContent = d.total_results;
+          document.getElementById("s-students").textContent = d.total_students;
+          document.getElementById("s-teachers").textContent = d.total_teachers;
+          document.getElementById("s-pass").textContent = d.pass_rate + "%";
+
+          // Class Chart
+          var maxAvg = Math.max(...d.class_performance.map((c) => c.avg), 1);
+          var chartHtml = "";
+          d.class_performance.forEach((c) => {
+            var h = Math.max((c.avg / 100) * 130, 5);
+            chartHtml +=
+              '<div class="bar-col"><div class="bar" style="height:' +
+              h +
+              'px"><span>' +
+              c.avg.toFixed(1) +
+              '</span></div><div class="bar-label">' +
+              esc(c.student_class) +
+              "</div></div>";
+          });
+          document.getElementById("class-chart").innerHTML = chartHtml;
+
+          // Grade Dist
+          var grades = ["A+", "A", "B", "C", "D", "F"];
+          var totalG =
+            Object.values(d.grade_distribution).reduce((a, b) => a + b, 0) || 1;
+          var distHtml = "";
+          grades.forEach((g) => {
+            var count = d.grade_distribution[g] || 0;
+            var pct = ((count / totalG) * 100).toFixed(0);
+            var gc =
+              g === "F"
+                ? "g-f"
+                : g === "D"
+                  ? "g-d"
+                  : g === "C"
+                    ? "g-c"
+                    : g === "B"
+                      ? "g-b"
+                      : "g-a";
+            var color =
+              g === "F"
+                ? "#ff465a"
+                : g === "D"
+                  ? "#ff7832"
+                  : g === "C"
+                    ? "#ffb432"
+                    : g === "B"
+                      ? "#8bb5ff"
+                      : "#4f8cff";
+            distHtml +=
+              '<div class="grade-row"><div class="grade-badge ' +
+              gc +
+              '">' +
+              g +
+              '</div><div class="grade-bar-bg"><div class="grade-bar-fill" style="width:' +
+              pct +
+              "%; background:" +
+              color +
+              '"></div></div><div class="grade-count">' +
+              count +
+              "</div></div>";
+          });
+          document.getElementById("grade-dist").innerHTML = distHtml;
+
+          // Top Students
+          var topHtml = "";
+          d.top_students.forEach((s, i) => {
+            topHtml +=
+              '<li><div style="display:flex;align-items:center"><div class="top-rank">' +
+              (i + 1) +
+              '</div><div><div class="top-name">' +
+              esc(s.student_name) +
+              '</div><div class="top-meta">' +
+              esc(s.student_class) +
+              '</div></div></div><div class="top-avg">' +
+              s.avg.toFixed(1) +
+              "</div></li>";
+          });
+          document.getElementById("top-students").innerHTML = topHtml;
+        })
+        .catch((e) => console.error(e));
+
+      // Load Results
+      var resultsLoaded = false,
+        currentPage = 1;
+      function loadResults(page) {
+        if (page) currentPage = page;
+        var params = [];
+        var s = document.getElementById("rf-search").value.trim(),
+          c = document.getElementById("rf-class").value,
+          y = document.getElementById("rf-year").value,
+          t = document.getElementById("rf-term").value;
+        if (s) params.push("search=" + encodeURIComponent(s));
+        if (c) params.push("student_class=" + encodeURIComponent(c));
+        if (y) params.push("year=" + encodeURIComponent(y));
+        if (t) params.push("term=" + encodeURIComponent(t));
+        params.push("page=" + currentPage);
+
+        var wrap = document.getElementById("results-list-wrap");
+        wrap.innerHTML =
+          '<div class="empty-state"><i class="fas fa-spinner fa-spin"></i><p>Loading...</p></div>';
+
+        fetch("/ajax/superuser-results/?" + params.join("&"))
+          .then((r) => r.json())
+          .then((d) => {
+            if (d.status !== "success") return;
+            resultsLoaded = true;
+            if (!document.getElementById("rf-class").dataset.populated) {
+              d.filters.classes.forEach((c) => {
+                var o = document.createElement("option");
+                o.value = c;
+                o.textContent = c;
+                document.getElementById("rf-class").appendChild(o);
+              });
+              d.filters.years.forEach((y) => {
+                var o = document.createElement("option");
+                o.value = y;
+                o.textContent = y;
+                document.getElementById("rf-year").appendChild(o);
+              });
+              document.getElementById("rf-class").dataset.populated = "1";
+            }
+
+            if (d.results.length === 0) {
+              wrap.innerHTML =
+                '<div class="empty-state"><i class="fas fa-inbox"></i><p>No records found</p></div>';
+              return;
+            }
+
+            var h = '<div class="student-list">';
+            d.results.forEach((r) => {
+              var parts = r.student_name.split(" ");
+              var init = parts[0].charAt(0);
+              if (parts.length > 1) init += parts[parts.length - 1].charAt(0);
+              var link =
+                "/results/?name=" +
+                encodeURIComponent(r.student_name) +
+                "&class=" +
+                encodeURIComponent(r.student_class) +
+                "&year=" +
+                encodeURIComponent(r.year) +
+                "&term=" +
+                encodeURIComponent(r.term);
+              if (r.exam_number)
+                link += "&exam=" + encodeURIComponent(r.exam_number);
+              h +=
+                '<a href="' +
+                link +
+                '" class="student-card"><div class="sc-left"><div class="sc-avatar">' +
+                esc(init.toUpperCase()) +
+                '</div><div><div class="sc-name">' +
+                esc(r.student_name) +
+                '</div><div class="sc-meta"><span><i class="fas fa-chalkboard"></i> ' +
+                esc(r.student_class) +
+                '</span><span><i class="fas fa-calendar"></i> ' +
+                esc(r.year) +
+                '</span><span><i class="fas fa-bookmark"></i> ' +
+                esc(r.term) +
+                '</span></div></div></div><div class="sc-right"><div class="sc-subj-count"><strong>' +
+                r.subjects_count +
+                '</strong>Subjects</div><div class="sc-arrow"><i class="fas fa-chevron-right"></i></div></div></a>';
+            });
+            h += "</div>";
+            wrap.innerHTML = h;
+
+            if (d.pages > 1) {
+              var pg = document.getElementById("pagination");
+              var pgH =
+                "<button " +
+                (currentPage <= 1 ? "disabled" : "") +
+                ' data-page="' +
+                (currentPage - 1) +
+                '"><i class="fas fa-chevron-left"></i></button>';
+              for (var p = 1; p <= d.pages; p++)
+                pgH +=
+                  '<button data-page="' +
+                  p +
+                  '" class="' +
+                  (p === currentPage ? "active" : "") +
+                  '">' +
+                  p +
+                  "</button>";
+              pgH +=
+                "<button " +
+                (currentPage >= d.pages ? "disabled" : "") +
+                ' data-page="' +
+                (currentPage + 1) +
+                '"><i class="fas fa-chevron-right"></i></button>';
+              pg.innerHTML = pgH;
+            }
+          })
+          .catch(() => {
+            wrap.innerHTML =
+              '<div class="empty-state"><i class="fas fa-exclamation-triangle" style="color:#ff465a"></i><p>Failed to load</p></div>';
+          });
+      }
+
+      document.getElementById("rf-apply").addEventListener("click", () => {
+        resultsLoaded = false;
+        loadResults(1);
+      });
+      document.getElementById("rf-clear").addEventListener("click", () => {
+        document.getElementById("rf-search").value = "";
+        document.getElementById("rf-class").value = "";
+        document.getElementById("rf-year").value = "";
+        document.getElementById("rf-term").value = "";
+        resultsLoaded = false;
+        loadResults(1);
+      });
+      document.getElementById("rf-search").addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          resultsLoaded = false;
+          loadResults(1);
+        }
+      });
+      document.getElementById("pagination").addEventListener("click", (e) => {
+        var b = e.target.closest("button[data-page]");
+        if (!b || b.disabled) return;
+        loadResults(parseInt(b.getAttribute("data-page")));
+      });
+
+      // Load on start
+      loadResults(1);
+
+      document
+        .getElementById("logout-btn")
+        .addEventListener("click", function () {
+          fetch("/ajax/admin/logout/", {
+            method: "POST",
+            headers: { "X-CSRFToken": getCSRF() },
+          }).then(() => {
+            window.location.href = "/admin/login/";
+          });
+        });
+    </script>
+  </body>
+</html>
