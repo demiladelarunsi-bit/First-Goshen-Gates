@@ -23,8 +23,7 @@ from resultportal import views
 from django.contrib import admin
 
 urlpatterns = [
-    # Main pages
-    path('', views.student_page, name='student_page'),
+     path('', views.student_page, name='student_page'),
     path('about/', views.about_page, name='about_page'),
     path('results/', views.student_results_page, name='student_results'),
     
@@ -68,10 +67,13 @@ urlpatterns = [
     path('ajax/admin/create-exam/', views.create_exam, name='create_exam'),
     
     # Holiday Tasks
-    # path('tasks/', views.tasks_page, name='tasks_page'),
+    path('tasks/', views.tasks_page, name='tasks_page'),
     path('ajax/get-tasks/', views.get_tasks, name='get_tasks'),
     path('ajax/admin/upload-task/', views.upload_task, name='upload_task'),
+    path('ajax/superuser/dashboard-data/', views.get_superuser_dashboard_data, name='get_superuser_dashboard_data'),
     
+    # Include admin site
+    path('admin/', admin.site.urls),
     # Include admin site
     path('admin/', admin.site.urls),
 ]

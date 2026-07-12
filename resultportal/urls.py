@@ -49,7 +49,6 @@ urlpatterns = [
     
     # Holiday Tasks
     path('tasks/', views.tasks_page, name='tasks_page'),
-    # path('tasks/', views.task_page, name='tasks_page'),
     path('ajax/get-tasks/', views.get_tasks, name='get_tasks'),
     path('ajax/admin/upload-task/', views.upload_task, name='upload_task'),
     path('ajax/superuser/dashboard-data/', views.get_superuser_dashboard_data, name='get_superuser_dashboard_data'),

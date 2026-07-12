@@ -1,2 +1,5 @@
-django==4.2
-gunicorn
+asgiref==3.11.1
+Django==6.0.2
+django-filter==25.2
+sqlparse==0.5.5
+tzdata==2025.3
