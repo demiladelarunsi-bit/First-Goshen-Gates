@@ -1,0 +1,186 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Holiday Tasks — First Goshen Gate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config={theme:{extend:{colors:{blue:'#4f8cff','blue-light':'#8bb5ff',dark:'#060a14',orange:'#ffb432'},fontFamily:{display:['"Space Grotesk"','sans-serif'],body:['"DM Sans"','sans-serif']}}}}</script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        :root{--blue:#4f8cff;--blue-light:#8bb5ff;--dark:#060a14;--card:rgba(10,16,30,0.8);--border:rgba(79,140,255,0.12);--border-hover:rgba(79,140,255,0.35);--glow:0 0 20px rgba(79,140,255,0.12);--orange:#ffb432}
+        *{box-sizing:border-box;margin:0;padding:0}
+        body{font-family:'DM Sans',sans-serif;background:var(--dark);color:#c8cdd8;overflow-x:hidden;min-height:100vh}
+        .glass{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;box-shadow:var(--glow)}
+        #navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,10,20,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+        .nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+        #main-section{position:relative;z-index:2;min-height:100vh;padding:100px 1.5rem 4rem;max-width:800px;margin:0 auto}
+        .page-header{text-align:center;margin-bottom:2rem}
+        .page-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(1.8rem,4vw,2.5rem);font-weight:700;color:#fff;margin-bottom:.5rem}
+        .page-header p{color:#5a6a8a;font-size:1rem}
+        .filter-card{padding:2rem;margin-bottom:2rem}
+        .section-label{font-family:'Space Grotesk',sans-serif;font-size:.7rem;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:2.5px;margin-bottom:1.5rem;display:flex;align-items:center;gap:.6rem}
+        .section-label::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+        .form-group{position:relative;margin-bottom:1.25rem;flex:1}
+        .form-group select{width:100%;padding:1rem 1rem .75rem;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:12px;color:#e0e4ed;font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;transition:all .3s;-webkit-appearance:none;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='%234f8cff'%3E%3Cpath d='M6 8L0 0h12z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 1rem center;padding-right:2.5rem}
+        .form-group select option{background:#0a1020;color:#e0e4ed}
+        .form-group select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,0.1);background:rgba(79,140,255,0.03)}
+        .form-group label{position:absolute;top:-.5rem;left:.75rem;font-size:.7rem;color:var(--blue);background:var(--dark);padding:0 .35rem;font-weight:600;letter-spacing:.5px}
+        .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.85rem 2rem;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;text-decoration:none;cursor:pointer;transition:all .3s;border:none;outline:none}
+        .btn-primary{background:linear-gradient(135deg,var(--blue),#3a6fd8);color:#fff;box-shadow:0 4px 20px rgba(79,140,255,0.25)}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,140,255,0.4)}
+        .w-full{width:100%}
+        .task-card{padding:1.75rem;margin-bottom:1rem;transition:all .3s;border-left:3px solid var(--orange)}
+        .task-card:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 8px 30px rgba(79,140,255,0.1)}
+        .task-type-badge{display:inline-block;padding:.2rem .6rem;border-radius:6px;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem;background:rgba(255,180,50,0.15);color:var(--orange)}
+        .task-title{font-family:'Space Grotesk',sans-serif;font-size:1.2rem;font-weight:700;color:#fff;margin-bottom:.5rem}
+        .task-desc{color:#6b7a99;font-size:.9rem;line-height:1.7;margin-bottom:1rem}
+        .task-meta{display:flex;flex-wrap:wrap;gap:1rem;font-size:.8rem;color:#4a5a7a}
+        .task-meta span{display:flex;align-items:center;gap:.3rem}
+        .task-meta i{color:var(--blue);font-size:.75rem}
+        .download-btn{display:inline-flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-radius:8px;background:rgba(79,140,255,0.1);color:var(--blue);font-size:.85rem;font-weight:600;text-decoration:none;transition:all .3s;margin-top:.75rem}
+        .download-btn:hover{background:rgba(79,140,255,0.2);transform:translateX(4px)}
+        .loading-spinner{text-align:center;padding:4rem 2rem}
+        .spinner-large{width:50px;height:50px;border:3px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:sp .8s linear infinite;margin:0 auto 1.5rem}
+        @keyframes sp{to{transform:rotate(360deg)}}
+        .error-card{text-align:center;padding:3rem 2rem}
+        .error-card i{font-size:3rem;color:#ff465a;margin-bottom:1rem}
+        .error-card h2{font-family:'Space Grotesk',sans-serif;font-size:1.5rem;color:#fff;margin-bottom:.5rem}
+        .error-card p{color:#6b7a99;font-size:1.05rem}
+        .hidden{display:none!important}
+        @media(max-width:768px){#navbar{padding:0 1rem}.task-card{padding:1.25rem}.task-meta{flex-direction:column;gap:.5rem}}
+    </style>
+</head>
+<body>
+    {% csrf_token %}
+    <nav id="navbar">
+        <a href="/" class="nav-logo">First Goshen Gate</a>
+        <div style="display:flex;gap:.75rem">
+            <a href="/" style="padding:.45rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:500;color:#6b7a99;text-decoration:none;border:1px solid transparent;transition:all .3s"><i class="fas fa-home" style="margin-right:.35rem"></i>Home</a>
+            <a href="/payments/" style="padding:.45rem 1.1rem;border-radius:10px;font-size:.85rem;font-weight:500;color:#6b7a99;text-decoration:none;border:1px solid transparent;transition:all .3s"><i class="fas fa-money-bill-wave" style="margin-right:.35rem"></i>Payments</a>
+        </div>
+    </nav>
+
+    <div id="main-section">
+        <div class="page-header">
+            <h1><i class="fas fa-clipboard-list" style="color:var(--orange);margin-right:.5rem"></i>Holiday Tasks</h1>
+            <p>Access your assignments, projects, and reading lists</p>
+        </div>
+
+        <div class="filter-card glass">
+            <div class="section-label"><i class="fas fa-filter"></i> Select Your Class</div>
+            <div class="form-group">
+                <select id="s-class" required>
+                    <option value="">Choose Class</option>
+                    <option>Nursery 1</option>
+                    <option>Nursery 2</option>
+                    <option>Primary 1</option>
+                    <option>Primary 2</option>
+                    <option>Primary 3</option>
+                    <option>Primary 4</option>
+                    <option>Primary 5</option>
+                    <option>Primary 6</option>
+                </select>
+                <label>Class</label>
+            </div>
+            <button type="button" class="btn btn-primary w-full" onclick="loadTasks()">
+                <i class="fas fa-search"></i> View Tasks
+            </button>
+        </div>
+
+        <div id="loading-state" class="glass loading-spinner hidden">
+            <div class="spinner-large"></div>
+            <p>Loading tasks...</p>
+        </div>
+
+        <div id="error-state" class="glass error-card hidden">
+            <i class="fas fa-exclamation-triangle"></i>
+            <h2>No Tasks Found</h2>
+            <p>No holiday tasks have been uploaded for your class yet.</p>
+        </div>
+
+        <div id="tasks-container" class="hidden"></div>
+    </div>
+
+    <script>
+        function getCSRF() {
+            var el = document.querySelector('input[name="csrfmiddlewaretoken"]');
+            if (el) return el.value;
+            var ck = document.cookie.split(';');
+            for (var i = 0; i < ck.length; i++) {
+                var c = ck[i].trim();
+                if (c.indexOf('csrftoken=') === 0) return c.substring(10);
+            }
+            return '';
+        }
+
+        function loadTasks() {
+            var studentClass = document.getElementById('s-class').value;
+            if (!studentClass) {
+                alert('Please select your class');
+                return;
+            }
+
+            document.getElementById('loading-state').classList.remove('hidden');
+            document.getElementById('error-state').classList.add('hidden');
+            document.getElementById('tasks-container').classList.add('hidden');
+
+            var fd = new FormData();
+            fd.append('student_class', studentClass);
+
+            fetch('/ajax/get-tasks/', {
+                method: 'POST',
+                headers: { 'X-CSRFToken': getCSRF() },
+                body: fd
+            })
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+                document.getElementById('loading-state').classList.add('hidden');
+                if (data.status === 'success' && data.tasks.length > 0) {
+                    renderTasks(data.tasks);
+                } else {
+                    document.getElementById('error-state').classList.remove('hidden');
+                }
+            })
+            .catch(function(err) {
+                document.getElementById('loading-state').classList.add('hidden');
+                alert('Error: ' + err.message);
+            });
+        }
+
+        function renderTasks(tasks) {
+            var html = '';
+            for (var i = 0; i < tasks.length; i++) {
+                var t = tasks[i];
+                html += '<div class="task-card glass" style="animation:fadeUp .4s ease ' + (i * 0.1) + 's forwards;opacity:0">';
+                html += '<span class="task-type-badge"><i class="fas fa-' + getTaskIcon(t.task_type) + '"></i> ' + t.task_type + '</span>';
+                html += '<div class="task-title">' + t.title + '</div>';
+                html += '<div class="task-desc">' + t.description + '</div>';
+                html += '<div class="task-meta">';
+                if (t.subject) html += '<span><i class="fas fa-book"></i> ' + t.subject + '</span>';
+                html += '<span><i class="fas fa-calendar"></i> Due: ' + t.due_date + '</span>';
+                html += '<span><i class="fas fa-clock"></i> Posted: ' + t.created_at + '</span>';
+                html += '</div>';
+                if (t.has_attachment) {
+                    html += '<a href="#" class="download-btn"><i class="fas fa-download"></i> Download Attachment</a>';
+                }
+                html += '</div>';
+            }
+            document.getElementById('tasks-container').innerHTML = html;
+            document.getElementById('tasks-container').classList.remove('hidden');
+        }
+
+        function getTaskIcon(type) {
+            var icons = {
+                'assignment': 'pencil-alt',
+                'project': 'project-diagram',
+                'reading': 'book-open',
+                'practice': 'dumbbell'
+            };
+            return icons[type] || 'tasks';
+        }
+    </script>
+</body>
+</html>
