@@ -512,3 +512,8 @@ if empty > 0 or zero_marks > 0:
     ExamQuestion.objects.filter(correct_answer='').delete()
     ExamQuestion.objects.filter(marks=0).delete()
     print(f'Cleaned. Total remaining: {ExamQuestion.objects.count()}')
+
+
+
+
+
