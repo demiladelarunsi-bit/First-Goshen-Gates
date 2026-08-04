@@ -56,7 +56,7 @@ ROOT_URLCONF = 'GOSHEN_GATES.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates'],
+        'DIRS': [BASE_DIR / 'resultportal'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
