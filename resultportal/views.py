@@ -808,6 +808,22 @@ def add_result(request):
         return JsonResponse({'status': 'error', 'message': 'No valid subject scores provided'})
     return JsonResponse({'status': 'success', 'message': f'{count} subject result(s) saved for {student_name} ({student_class})'})
 
+from django.http import JsonResponse
+
+def get_superuser_dashboard_data(request):
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
+
+    try:
+        from .models import Student
+        total_students = Student.objects.count()
+        data = {
+            "status": "success",
+            "total_students": total_students,
+        }
+        return JsonResponse(data)
+    except Exception as e:
+        return JsonResponse({"error": str(e)}, status=500)
 
 @login_required
 @csrf_exempt
