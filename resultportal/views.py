@@ -75,7 +75,31 @@ def student_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from .models import Student
 
+def ajax_admin_students(request):
+    if not request.user.is_staff:
+        return JsonResponse({"status": "error", "message": "Permission denied"}, status=403)
+        
+    search = request.GET.get('search', '')
+    page = request.GET.get('page', 1)
+    
+    students = Student.objects.all().order_by('-id')
+    if search:
+        students = students.filter(full_name__icontains=search) | students.filter(admission_number__icontains=search)
+        
+    paginator = Paginator(students, 15) # 15 students per page
+    studs = paginator.get_page(page)
+    
+    data = {
+        "status": "success",
+        "students": list(studs.object_list.values('admission_number', 'full_name', 'current_class', 'gender', 'parent_name', 'parent_phone')),
+        "pages": paginator.num_pages,
+        "page": studs.number
+    }
+    return JsonResponse(data)
 
 
 
