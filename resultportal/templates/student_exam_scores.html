@@ -1,0 +1,75 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exam Scores — {{ student.full_name }}</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--blue:#4f8cff;--blue-light:#8bb5ff;--dark:#060a14;--card:rgba(10,16,30,0.8);--border:rgba(79,140,255,0.12);--red:#ff465a}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:#c8cdd8;min-height:100vh}
+.glass{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px}
+.navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 2rem;height:70px;display:flex;align-items:center;justify-content:space-between;background:rgba(6,10,20,0.85);backdrop-filter:blur(24px);border-bottom:1px solid var(--border)}
+.nav-logo{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.5rem;background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-decoration:none}
+.nav-links{display:flex;align-items:center;gap:.5rem}
+.nav-links a{padding:.5rem 1rem;border-radius:10px;color:#6b7a99;text-decoration:none;font-size:.85rem;font-weight:500}
+.nav-links a:hover,.nav-links a.active{color:var(--blue);background:rgba(79,140,255,0.05)}
+.logout-btn{background:rgba(255,70,90,0.1);color:#ff465a;border:1px solid rgba(255,70,90,0.25);padding:.4rem .85rem;border-radius:10px;font-size:.85rem;cursor:pointer;text-decoration:none;font-weight:500}
+.container{max-width:900px;margin:0 auto;padding:100px 1.5rem 3rem}
+.page-title{font-family:'Space Grotesk',sans-serif;font-size:1.8rem;font-weight:700;color:#fff;margin-bottom:2rem}
+.table-wrap{overflow-x:auto;border-radius:12px}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th{text-align:left;padding:1rem;font-family:'Space Grotesk',sans-serif;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;color:#5a6a8a;background:rgba(255,255,255,0.02)}
+td{padding:1rem;font-size:.88rem;color:#c8cdd8;border-top:1px solid var(--border)}
+.empty{text-align:center;padding:3rem;color:#5a6a8a}
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <a href="/student/dashboard/" class="nav-logo">First Goshen Gate</a>
+  <div class="nav-links">
+    <a href="/student/dashboard/"><i class="fas fa-home"></i> Dashboard</a>
+    <a href="/student/results/"><i class="fas fa-chart-bar"></i> Results</a>
+    <a href="/student/exam-scores/" class="active"><i class="fas fa-laptop"></i> Exam Scores</a>
+    <a href="/student/profile/"><i class="fas fa-user"></i> Profile</a>
+  </div>
+  <a href="/student/logout/" class="logout-btn"><i class="fas fa-sign-out-alt"></i> Logout</a>
+</nav>
+
+<div class="container">
+  <h1 class="page-title">My CBT Exam Scores</h1>
+  
+  {% if attempts %}
+  <div class="glass table-wrap">
+    <table>
+      <thead><tr><th>Subject</th><th>Term</th><th>Year</th><th>Score</th><th>Total</th><th>Percentage</th><th>Date Taken</th></tr></thead>
+      <tbody>
+        {% for a in attempts %}
+        <tr>
+          <td>{{ a.subject }}</td>
+          <td>{{ a.term }}</td>
+          <td>{{ a.year }}</td>
+          <td><strong style="color:var(--blue)">{{ a.score }}</strong></td>
+          <td>{{ a.total_marks }}</td>
+          <td>
+            {% widthratio a.score a.total_marks 100 %}%
+          </td>
+          <td>{{ a.created_at|date:'M d, Y' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="glass empty">
+      <i class="fas fa-laptop" style="font-size:2rem;margin-bottom:1rem;display:block;color:#3a4a6a"></i>
+      You haven't taken any CBT exams yet.
+    </div>
+  {% endif %}
+</div>
+</body>
+</html>
