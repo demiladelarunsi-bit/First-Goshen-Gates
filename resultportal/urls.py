@@ -42,6 +42,7 @@ urlpatterns = [
     path('ajax/admin/signup/', views.ajax_signup, name='ajax_signup'),
     path('ajax/admin/login/', views.ajax_login, name='ajax_login'),
     path('ajax/admin/logout/', views.ajax_logout, name='ajax_logout'),
+    path('ajax/admin/students/', views.ajax_admin_students, name='ajax_admin_students'),
 
     # ============ Superuser ============
     path('superuser/login/', views.superuser_login_page, name='superuser_login'),

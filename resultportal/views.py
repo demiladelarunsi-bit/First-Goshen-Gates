@@ -34,6 +34,31 @@ def student_login_page(request):
     if request.session.get('student_id'):
         return redirect('student_dashboard')
     return render(request, 'student_login.html')
+from django.http import JsonResponse
+
+def get_superuser_dashboard_data(request):
+    # Make sure only logged-in superusers can get this data
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
+
+    try:
+        # Import your Student model inside the function to be safe
+        from .models import Student
+        
+        # Count the total number of students
+        total_students = Student.objects.count()
+        
+        # You can add more data here later, like total exams or payments
+        
+        data = {
+            "status": "success",
+            "total_students": total_students,
+        }
+        return JsonResponse(data)
+        
+    except Exception as e:
+        # If anything goes wrong, send an error message instead of crashing
+        return JsonResponse({"error": str(e)}, status=500)
 
 def tasks_page(request):
     return render(request, 'tasks_page.html')
@@ -50,7 +75,31 @@ def student_required(view_func):
         return view_func(request, *args, **kwargs)
     return wrapper
 
+from django.core.paginator import Paginator
+from django.http import JsonResponse
+from .models import Student
 
+def ajax_admin_students(request):
+    if not request.user.is_staff:
+        return JsonResponse({"status": "error", "message": "Permission denied"}, status=403)
+        
+    search = request.GET.get('search', '')
+    page = request.GET.get('page', 1)
+    
+    students = Student.objects.all().order_by('-id')
+    if search:
+        students = students.filter(full_name__icontains=search) | students.filter(admission_number__icontains=search)
+        
+    paginator = Paginator(students, 15) # 15 students per page
+    studs = paginator.get_page(page)
+    
+    data = {
+        "status": "success",
+        "students": list(studs.object_list.values('admission_number', 'full_name', 'current_class', 'gender', 'parent_name', 'parent_phone')),
+        "pages": paginator.num_pages,
+        "page": studs.number
+    }
+    return JsonResponse(data)
 
 
 
