@@ -1,14 +1,28 @@
 from django.urls import path, include
 from . import views
 from django.contrib import admin
+from django.urls import path, include
+from . import views
+from django.contrib import admin
+
+from . import views
+from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+from django.urls import path
+from . import views
+from django.contrib import admin
+from django.conf import settings
+from django.conf.urls.static import static
+
 
 urlpatterns = [
-    # Main pages
+    # ============ Main pages ============
     path('', views.student_page, name='student_page'),
     path('about/', views.about_page, name='about_page'),
     path('results/', views.student_results_page, name='student_results'),
-    
-    # AJAX endpoints
+
+    # ============ AJAX endpoints ============
     path('ajax/check-result/', views.check_result, name='check_result'),
     path('ajax/stats/', views.get_stats, name='get_stats'),
     path('ajax/add-result/', views.add_result, name='add_result'),
@@ -17,42 +31,82 @@ urlpatterns = [
     path('ajax/delete-result/', views.delete_result, name='delete_result'),
     path('ajax/dashboard-stats/', views.get_dashboard_stats, name='get_dashboard_stats'),
     path('ajax/teacher-profile/', views.get_teacher_profile, name='get_teacher_profile'),
-    
-    # Admin pages
+
+    # ============ Admin pages ============
     path('admin/signup/', views.admin_signup_page, name='admin_signup_page'),
     path('admin/login/', views.admin_login_page, name='admin_login_page'),
     path('admin/dashboard/', views.admin_dashboard, name='admin_dashboard'),
     path('admin/profile/', views.teacher_profile, name='teacher_profile'),
-    
-    # Admin AJAX
+
+    # ============ Admin AJAX ============
     path('ajax/admin/signup/', views.ajax_signup, name='ajax_signup'),
     path('ajax/admin/login/', views.ajax_login, name='ajax_login'),
     path('ajax/admin/logout/', views.ajax_logout, name='ajax_logout'),
-    
-    # Superuser
+
+    # ============ Superuser ============
     path('superuser/login/', views.superuser_login_page, name='superuser_login'),
     path('superuser/dashboard/', views.superuser_dashboard, name='superuser_dashboard'),
     path('ajax/superuser/login/', views.ajax_superuser_login, name='ajax_superuser_login'),
-    
-    # Payment
+
+    # ============ Payment ============
     path('payments/', views.payment_page, name='payment_page'),
     path('ajax/check-payment/', views.check_payment, name='check_payment'),
     path('ajax/admin/record-payment/', views.record_payment, name='record_payment'),
-    
-    # CBT Exams
+
+    # ============ CBT Exams ============
     path('exams/', views.exam_list_page, name='exam_list_page'),
     path('exams/<int:exam_id>/', views.take_exam, name='take_exam'),
     path('ajax/get-exams/', views.get_exams, name='get_exams'),
     path('ajax/get-exam-questions/', views.get_exam_questions_for_take, name='get_exam_questions_for_take'),
     path('ajax/submit-exam/', views.submit_exam, name='submit_exam'),
     path('ajax/admin/create-exam/', views.create_exam, name='create_exam'),
-    
-    # Holiday Tasks
+
+    # ============ Holiday Tasks ============
     path('tasks/', views.tasks_page, name='tasks_page'),
     path('ajax/get-tasks/', views.get_tasks, name='get_tasks'),
     path('ajax/admin/upload-task/', views.upload_task, name='upload_task'),
-    path('ajax/superuser/dashboard-data/', views.get_superuser_dashboard_data, name='get_superuser_dashboard_data'),
-    
-    # Include admin site
+
+    # ============ Django admin ============
     path('admin/', admin.site.urls),
+
+    # ============================================================
+    # ============ NEW: Student Auth & Dashboard ================
+    # ============================================================
+    path('student/login/', views.student_login_page, name='student_login_page'),
+    path('student/dashboard/', views.student_dashboard, name='student_dashboard'),
+    path('student/profile/', views.student_profile_view, name='student_profile_view'),
+    path('student/results/', views.student_view_results, name='student_view_results'),
+    path('student/exam-scores/', views.student_view_exam_scores, name='student_view_exam_scores'),
+    path('student/logout/', views.ajax_student_logout, name='student_logout'),
+    path('student/print-result/', views.student_print_result, name='student_print_result'),
+
+    # Student AJAX
+    path('ajax/student/login/', views.ajax_student_login, name='ajax_student_login'),
+    path('ajax/student/change-password/', views.student_change_password, name='student_change_password'),
+    path('ajax/student/forgot-password/', views.forgot_password, name='student_forgot_password'),
+
+    # ============ NEW: Student Management (Admin) ============
+    path('admin/students/', views.manage_students, name='manage_students'),
+    path('ajax/admin/students/', views.get_students, name='get_students'),
+    path('ajax/admin/students/add/', views.add_student, name='add_student'),
+    path('ajax/admin/students/<int:student_id>/edit/', views.edit_student, name='edit_student'),
+    path('ajax/admin/students/<int:student_id>/delete/', views.delete_student, name='delete_student'),
+    path('ajax/admin/students/promote/', views.promote_students, name='promote_students'),
+    path('ajax/admin/students/bulk-upload/', views.bulk_upload_students, name='bulk_upload_students'),
+
+    # ============ NEW: School Settings ============
+    path('admin/settings/', views.school_settings_page, name='school_settings_page'),
+    path('ajax/admin/settings/update/', views.update_school_settings, name='update_school_settings'),
+
+    # ============ NEW: CBT Scores View (Admin) ============
+    path('admin/exam-scores/', views.view_exam_scores, name='view_exam_scores'),
+    path('ajax/admin/exam-scores/', views.get_exam_scores, name='get_exam_scores'),
+
+    # ============ NEW: Payments View (Admin) ============
+    path('admin/payments/', views.view_payments, name='view_payments'),
+    path('ajax/admin/payments/', views.get_payments, name='get_payments'),
+    path('ajax/admin/payments/<int:payment_id>/verify/', views.verify_payment, name='verify_payment'),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
