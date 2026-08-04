@@ -25,7 +25,7 @@ def get_remarks(grade):
 
 
 def student_page(request):
-    return render(request, 'student.html')
+    return render(request, 'resultportal/student.html')
 
 def about_page(request):
     return render(request, 'about.html')
