@@ -216,6 +216,7 @@
       <div class="teacher-tabs">
         <button class="tab-btn active" data-tab="single"><i class="fas fa-pen"></i> Add Scores</button>
         <button class="tab-btn" data-tab="students"><i class="fas fa-user-plus"></i> Add Student</button>
+        <button class="tab-btn" data-tab="view-students"><i class="fas fa-users"></i> View Students</button>
         <button class="tab-btn" data-tab="bulk"><i class="fas fa-file-csv"></i> Bulk</button>
         <button class="tab-btn" data-tab="view-results"><i class="fas fa-list-alt"></i> All Results</button>
         <button class="tab-btn" data-tab="payments"><i class="fas fa-money-bill-wave"></i> Payments</button>
@@ -301,6 +302,24 @@
             <span class="btn-loader"><div class="spinner"></div></span>
           </button>
         </form>
+      </div>
+
+      <!-- TAB: VIEW ALL STUDENTS -->
+      <div id="tab-view-students" class="tab-content">
+        <div class="glass" style="padding: 2rem">
+          <div class="section-label"><i class="fas fa-users"></i> All Registered Students</div>
+          <div class="filters-bar">
+            <input type="text" id="stu-search" class="filter-input" placeholder="Search name or admission no..." style="flex: 1; min-width: 200px" onkeyup="if(event.key==='Enter') loadStudents(1)">
+            <button class="btn btn-primary" style="padding: 0.6rem 1.5rem" onclick="loadStudents(1)"><i class="fas fa-filter"></i> Filter</button>
+          </div>
+          <div class="table-wrap">
+            <table class="data-table">
+              <thead><tr><th>Admission No</th><th>Full Name</th><th>Class</th><th>Gender</th><th>Parent Name</th><th>Parent Phone</th></tr></thead>
+              <tbody id="students-tbody"><tr><td colspan="6" style="text-align:center; padding: 2rem;">Click "Filter" to load students...</td></tr></tbody>
+            </table>
+          </div>
+          <div class="pagination" id="stu-pagination"></div>
+        </div>
       </div>
 
       <!-- TAB: BULK UPLOAD -->
@@ -607,6 +626,7 @@
           
           if (this.getAttribute("data-tab") === "view-results") loadResults(1);
           if (this.getAttribute("data-tab") === "view-cbt") loadExamScores(1);
+          if (this.getAttribute("data-tab") === "view-students") loadStudents(1);
         });
       });
 
@@ -636,6 +656,34 @@
           document.getElementById("ds-since").textContent = d.member_since;
         }
       }).catch(function () {});
+
+      // LOAD ALL STUDENTS (AJAX TABLE)
+      function loadStudents(page) {
+        var search = document.getElementById('stu-search').value;
+        document.getElementById('students-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem;"><div class="spinner" style="margin:0 auto;border-color:var(--blue);border-top-color:transparent"></div></td></tr>';
+        
+        fetch('/ajax/admin/students/?page='+page+'&search='+search)
+        .then(r => r.json())
+        .then(d => {
+          if (d.status === 'success') {
+            var h = '';
+            if (d.students.length === 0) {
+              h = '<tr><td colspan="6" style="text-align:center; padding: 2rem;">No students found</td></tr>';
+            } else {
+              d.students.forEach(s => {
+                h += '<tr><td>'+s.admission_number+'</td><td>'+s.full_name+'</td><td>'+s.current_class+'</td><td>'+s.gender+'</td><td>'+s.parent_name+'</td><td>'+s.parent_phone+'</td></tr>';
+              });
+            }
+            document.getElementById('students-tbody').innerHTML = h;
+
+            var p = '';
+            for (var i=1; i<=d.pages; i++) {
+              p += '<button class="page-btn '+(i===d.page?'active':'')+'" onclick="loadStudents('+i+')">'+i+'</button>';
+            }
+            document.getElementById('stu-pagination').innerHTML = p;
+          }
+        }).catch(() => { document.getElementById('students-tbody').innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 2rem; color:#ff465a">Error loading students</td></tr>'; });
+      }
 
       // LOAD ALL RESULTS (AJAX TABLE)
       function loadResults(page) {
