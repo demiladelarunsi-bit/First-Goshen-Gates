@@ -34,6 +34,31 @@ def student_login_page(request):
     if request.session.get('student_id'):
         return redirect('student_dashboard')
     return render(request, 'student_login.html')
+from django.http import JsonResponse
+
+def get_superuser_dashboard_data(request):
+    # Make sure only logged-in superusers can get this data
+    if not request.user.is_superuser:
+        return JsonResponse({"error": "Permission denied"}, status=403)
+
+    try:
+        # Import your Student model inside the function to be safe
+        from .models import Student
+        
+        # Count the total number of students
+        total_students = Student.objects.count()
+        
+        # You can add more data here later, like total exams or payments
+        
+        data = {
+            "status": "success",
+            "total_students": total_students,
+        }
+        return JsonResponse(data)
+        
+    except Exception as e:
+        # If anything goes wrong, send an error message instead of crashing
+        return JsonResponse({"error": str(e)}, status=500)
 
 def tasks_page(request):
     return render(request, 'tasks_page.html')
