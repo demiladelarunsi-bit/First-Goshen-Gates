@@ -1,0 +1,102 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Student Login — First Goshen Gate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--blue:#4f8cff;--blue-light:#8bb5ff;--dark:#060a14;--card:rgba(10,16,30,0.8);--border:rgba(79,140,255,0.12);--border-hover:rgba(79,140,255,0.35);--glow:0 0 20px rgba(79,140,255,0.12)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--dark);color:#c8cdd8;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1.5rem;overflow-x:hidden}
+.grid-bg{position:fixed;inset:0;z-index:0;pointer-events:none;background-image:linear-gradient(rgba(79,140,255,0.02) 1px,transparent 1px),linear-gradient(90deg,rgba(79,140,255,0.02) 1px,transparent 1px);background-size:70px 70px}
+.glass{background:var(--card);backdrop-filter:blur(20px);border:1px solid var(--border);border-radius:16px;box-shadow:var(--glow)}
+.login-card{width:100%;max-width:440px;padding:2.5rem;position:relative;z-index:2}
+.logo{font-family:'Space Grotesk',sans-serif;font-size:1.6rem;font-weight:700;background:linear-gradient(135deg,var(--blue),var(--blue-light));-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center;text-decoration:none;margin-bottom:.25rem;display:block}
+.subtitle{color:#5a6a8a;text-align:center;font-size:.85rem;margin-bottom:2rem}
+.form-group{position:relative;margin-bottom:1.25rem}
+.form-group input{width:100%;padding:1rem;background:rgba(255,255,255,0.03);border:1.5px solid var(--border);border-radius:12px;color:#e0e4ed;font-family:'DM Sans',sans-serif;font-size:.95rem;outline:none;transition:all .3s}
+.form-group input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(79,140,255,0.1)}
+.form-group label{position:absolute;top:-.5rem;left:.85rem;font-size:.7rem;color:var(--blue);background:var(--dark);padding:0 .35rem;font-weight:600;letter-spacing:.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;padding:.9rem 2rem;border-radius:12px;font-family:'Space Grotesk',sans-serif;font-weight:600;font-size:.95rem;cursor:pointer;border:none;width:100%;background:linear-gradient(135deg,var(--blue),#3a6fd8);color:#fff;transition:all .3s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(79,140,255,0.4)}
+.btn:disabled{opacity:.5;cursor:wait;transform:none}
+.links{text-align:center;margin-top:1.5rem;font-size:.85rem;color:#5a6a8a}
+.links a{color:var(--blue-light);text-decoration:none}
+.back-home{position:fixed;top:1.5rem;left:1.5rem;color:#5a6a8a;text-decoration:none;font-size:.85rem;display:flex;align-items:center;gap:.4rem;z-index:10}
+.back-home:hover{color:var(--blue)}
+#toast{position:fixed;top:1.5rem;right:1.5rem;z-index:200;padding:1rem 1.5rem;border-radius:12px;backdrop-filter:blur(20px);min-width:280px;display:none;font-size:.9rem;font-weight:500;border:1px solid}
+.toast-success{background:rgba(79,140,255,0.1);border-color:rgba(79,140,255,0.25);color:var(--blue);display:flex !important;align-items:center;gap:.75rem}
+.toast-error{background:rgba(255,70,90,0.1);border-color:rgba(255,70,90,0.25);color:#ff465a;display:flex !important;align-items:center;gap:.75rem}
+</style>
+</head>
+<body>
+<div class="grid-bg"></div>
+<a href="/" class="back-home"><i class="fas fa-arrow-left"></i> Back to Home</a>
+<div id="toast"><i class="fas fa-info-circle"></i><span id="toast-msg"></span></div>
+
+<div class="login-card glass">
+  <a href="/" class="logo">First Goshen Gate</a>
+  <p class="subtitle">Student Portal Login</p>
+  
+  <form id="login-form">
+    {% csrf_token %}
+    <div class="form-group">
+      <input type="text" id="admission_number" name="admission_number" required placeholder=" ">
+      <label>Admission Number</label>
+    </div>
+    <div class="form-group">
+      <input type="password" id="password" name="password" required placeholder=" ">
+      <label>Password</label>
+    </div>
+    <button type="submit" class="btn" id="submit-btn">
+      <i class="fas fa-sign-in-alt"></i> Login to Dashboard
+    </button>
+  </form>
+  
+  <div class="links">
+    Don't have an account? <a href="#" id="forgot-link">Contact Admin</a><br>
+    <a href="#" id="reset-link" style="font-size:.8rem;margin-top:.5rem;display:inline-block">Forgot password?</a>
+  </div>
+</div>
+
+<script>
+function getCSRF(){var el=document.querySelector('input[name="csrfmiddlewaretoken"]');return el?el.value:'';}
+function showToast(msg,type){var t=document.getElementById('toast');t.className='toast-'+(type||'success');document.getElementById('toast-msg').textContent=msg;t.style.display='flex';setTimeout(function(){t.style.display='none';},4000);}
+
+document.getElementById('login-form').addEventListener('submit',function(e){
+  e.preventDefault();
+  var btn=document.getElementById('submit-btn');
+  var orig=btn.innerHTML;
+  btn.innerHTML='<i class="fas fa-circle-notch fa-spin"></i> Logging in...';
+  btn.disabled=true;
+  var fd=new FormData(this);
+  fetch('/ajax/student/login/',{method:'POST',headers:{'X-CSRFToken':getCSRF()},body:fd})
+  .then(function(r){return r.json();})
+  .then(function(d){
+    btn.innerHTML=orig;btn.disabled=false;
+    if(d.status==='success'){showToast('Welcome back! Redirecting...','success');setTimeout(function(){window.location.href='/student/dashboard/';},800);}
+    else showToast(d.message||'Login failed','error');
+  })
+  .catch(function(err){btn.innerHTML=orig;btn.disabled=false;showToast('Network error','error');});
+});
+
+document.getElementById('reset-link').addEventListener('click',function(e){
+  e.preventDefault();
+  var adm=prompt('Enter your admission number:');
+  if(!adm)return;
+  var ph=prompt('Enter your parent/guardian phone number:');
+  if(!ph)return;
+  var fd=new FormData();
+  fd.append('admission_number',adm);
+  fd.append('parent_phone',ph);
+  fetch('/ajax/student/forgot-password/',{method:'POST',headers:{'X-CSRFToken':getCSRF()},body:fd})
+  .then(function(r){return r.json();})
+  .then(function(d){showToast(d.message,d.status==='success'?'success':'error');});
+});
+</script>
+</body>
+</html>
